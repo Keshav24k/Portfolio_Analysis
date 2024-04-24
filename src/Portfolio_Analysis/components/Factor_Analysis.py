@@ -179,5 +179,8 @@ def Factor_Data(tickers, crypto_df, result_df):
       result_df.reset_index(inplace=True)
   selected_columns = ['Date'] + tickers
 
+  print(factor_DDF.columns,"*********************************Lala*********************************")
+  print(result_df.head(4),"*********************************GAGA*********************************")
+
   factor_table = pd.merge(factor_DDF[selected_columns], result_df[['Date', 'Daily_Portfolio_Return']], on='Date', how='left')
   return factor_table

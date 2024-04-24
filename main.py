@@ -9,7 +9,7 @@ import streamlit as st
 from src.Portfolio_Analysis.components.Risk_Analysis  import *
 from src.Portfolio_Analysis.components.Factor_Analysis  import *
 from src.Portfolio_Analysis.components.Data_Processing  import *
-from src.Portfolio_Analysis.components.Data_ingestion  import *
+from src.Portfolio_Analysis.components.Data_Ingestion  import *
 
 
 def main():
@@ -26,7 +26,7 @@ def main():
         print("File does not exist.")
 
     # Process position history data if available
-    print("--------------------Stage1--------------------")
+    print("--------------------   Stage 1    --------------------")
     if 'position history' in dataframes:
       crypto_df = dataframes['position history'].copy()
       crypto_df = clean_column_names(crypto_df)      
@@ -40,7 +40,7 @@ def main():
     columns = ', '.join(crypto_df.columns)
     st.text(f"Cryptos used: {columns}")
     # Slider to select the number of rows to display
-    
+    print("--------------------   Stage 2    --------------------")
     num_rows = st.slider('Select number of rows to display:', min_value=1, max_value=len(crypto_df), value=3)
     st.write(f"Displaying {num_rows} rows of data:")
     # Display DataFrame using st.dataframe or st.write
@@ -50,14 +50,16 @@ def main():
     
     if 'transaction history' in dataframes:
       transaction_df = dataframes['transaction history'].copy()
-      complete_df = Combining_sheets(crypto_df_working,transaction_df)
+      complete_df = Combining_sheets(crypto_df_working, transaction_df)
 
     print("__________Stage:Findata __________")
     result_df = process_financial_data(complete_df, crypto_df)
 
+    print("--------------------   Stage 3    --------------------")
     print("__________Stage:Factordata __________")
     factor_df = Factor_Data(['BTC-USD','^GSPC','ETH-USD'], crypto_df, result_df)
 
+    print("--------------------   Stage 4    --------------------")
     print("__________Stage:Risk __________")
     Risk_vs_Return(result_df)
 
