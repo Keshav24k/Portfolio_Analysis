@@ -5,4 +5,10 @@ plotly
 matplotlib
 scipy
 streamlit
+shap
+sklearn
+xgboost
+typing
+datetime
+IPython
 -e .
