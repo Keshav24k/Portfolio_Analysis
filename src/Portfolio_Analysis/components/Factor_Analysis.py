@@ -12,6 +12,11 @@ import yfinance as yf
 from datetime import timedelta
 
 def Covariance_Analysis(df):  
+    """
+    Analyzes the covariance of financial data.
+    Args: df(pd.DataFrame): DataFrame containing financial data with 'Date' and other numeric columns.
+    Effects: Displays the covariance matrix using Streamlit.
+    """
     df['Date'] = pd.to_datetime(df['Date'])
 
   # Setting Date as the index
@@ -86,6 +91,7 @@ def Shap_Importance(data):
     shap_values = explainer(X_train)
 
     # For the force plot, convert it to a static plot and increase figure size and DPI
+    st.write("Force Plot")
     plt.figure(figsize=(20, 10), dpi=150)  # Adjust figure size and resolution
     shap.plots.force(explainer.expected_value, shap_values.values[0, :], feature_names=X_train.columns, matplotlib=True)
     plt.savefig('shap_force_plot.png', bbox_inches='tight')  # Save the plot
@@ -93,33 +99,36 @@ def Shap_Importance(data):
     st.image('shap_force_plot.png', caption='SHAP Force Plot', use_column_width=True)  # Display in Streamlit
 
     # Summary Plot
+    st.write("Summary Plot")
     plt.figure(figsize=(20, 10), dpi=150)  # Same adjustments for other plots
     shap.summary_plot(shap_values.values, X_train, show=False)
     st.pyplot(plt.gcf())
     plt.clf()
 
     # Dependence Plot for a specific feature
+    st.write("Dependence Plot")
+    feature_index = st.slider(
+        label="Select the feature index for SHAP Dependence Plot",
+        min_value=0,
+        max_value=len(X_train.columns) - 1,
+        value=0  # default value to display
+    )
+    st.write(f"Showing SHAP Dependence Plot for: {X_train.columns[feature_index]}")
     plt.figure(figsize=(20, 10), dpi=150)  # Adjust figure size and resolution
-    shap.dependence_plot(X_train.columns[1], shap_values.values, X_train, show=False)
+    shap.dependence_plot(X_train.columns[feature_index], shap_values.values, X_train, show=False)
     st.pyplot(plt.gcf())  # Display the plot in Streamlit
     plt.clf() 
-    
 
-def Factor_Analysis(df):
-    
-    Covariance_Analysis(df)
-    Permutation_Importance(df)
-    Shap_Importance(df)
 
+
+    
 def fetch_adjusted_close(tickers, start_date, end_date):
     """
-    Fetches adjusted close prices for specified tickers within a date range.
-
-    Parameters:
+    Objective: Fetches adjusted close prices for specified tickers within a date range.
+    Args:
         tickers (list of str): List of ticker symbols.
         start_date (str): Start date in 'YYYY-MM-DD' format.
         end_date (str): End date in 'YYYY-MM-DD' format.
-
     Returns:
         pd.DataFrame: DataFrame containing adjusted close prices for given tickers.
     """
@@ -136,13 +145,13 @@ def fetch_adjusted_close(tickers, start_date, end_date):
     
     return adj_close_prices
 
+
+
 def calculate_returns(df):
     """
     Calculates percentage changes in prices from one day to the next across specified columns.
-
     Parameters:
         df (pd.DataFrame): DataFrame with a 'Date' column and one or more price columns.
-
     Returns:
         pd.DataFrame: DataFrame containing the date and percentage changes.
     """
@@ -153,8 +162,18 @@ def calculate_returns(df):
     df2.dropna(inplace=True)  # Removing the first row that always contains NaN due to pct_change
     return df2
 
+
+
 def Factor_download(tickers, start_date, end_date):
-  # Initialize variables
+  """
+    Fetches adjusted close prices for specified tickers within a date range using Yahoo Finance.
+    Args:
+        tickers (list of str): List of ticker symbols.
+        start_date (str): Start date in 'YYYY-MM-DD' format.
+        end_date (str): End date in 'YYYY-MM-DD' format.
+    Returns:
+        pd.DataFrame: DataFrame containing the adjusted close prices for the given tickers.
+    """
   factor_prices = fetch_adjusted_close(tickers, start_date, end_date)
 
   # Filling missing data
@@ -168,8 +187,18 @@ def Factor_download(tickers, start_date, end_date):
 
   return factor_returns
 
-def Factor_Data(tickers, crypto_df, result_df):
 
+
+def Factor_Data(tickers, crypto_df, result_df):
+  """
+    Integrates factor data with cryptocurrency and portfolio results.
+    Args:
+        tickers (list of str): Ticker symbols for factors.
+        crypto_df (pd.DataFrame): DataFrame containing cryptocurrency data.
+        result_df (pd.DataFrame): DataFrame containing portfolio returns.
+    Returns:
+        pd.DataFrame: Merged DataFrame with factors and daily portfolio returns.
+    """
   factor_DDF = Factor_download(tickers, crypto_df['Date'].min().strftime('%Y-%m-%d'), crypto_df['Date'].max().strftime('%Y-%m-%d'))
   # Merging DataFrames
   if 'Date' not in factor_DDF.columns:
@@ -177,10 +206,17 @@ def Factor_Data(tickers, crypto_df, result_df):
 
   if 'Date' not in result_df.columns:
       result_df.reset_index(inplace=True)
-  selected_columns = ['Date'] + tickers
-
-  print(factor_DDF.columns,"*********************************Lala*********************************")
-  print(result_df.head(4),"*********************************GAGA*********************************")
+  selected_columns = ['Date'] + tickers  
 
   factor_table = pd.merge(factor_DDF[selected_columns], result_df[['Date', 'Daily_Portfolio_Return']], on='Date', how='left')
   return factor_table
+
+
+
+def Factor_Analysis(df):
+    
+    Covariance_Analysis(df)
+
+    Permutation_Importance(df)
+
+    Shap_Importance(df)

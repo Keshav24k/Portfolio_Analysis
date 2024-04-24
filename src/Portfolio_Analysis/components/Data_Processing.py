@@ -1,4 +1,6 @@
 import pandas as pd
+import matplotlib.pyplot as plt
+import streamlit as st
 
 def add_total_pv_column(df: pd.DataFrame) -> pd.DataFrame:
     """
@@ -78,7 +80,7 @@ def calculate_column_returns(df: pd.DataFrame) -> pd.DataFrame:
     """
     df2 = pd.DataFrame(df['Date'])
     for column in df.columns:
-        if column != 'Date' and column !='Tot_PV' and column != 'Dollars': 
+        if column != 'Date' and column !='Tot_PV': #and column != 'Dollars': 
             df2[column] = df[column].pct_change()
     df2.replace([float('inf'), -float('inf')], pd.NA, inplace=True)
     df2 = df2.fillna(0)
@@ -90,7 +92,7 @@ def normalize_weights(df: pd.DataFrame) -> pd.DataFrame:
     Args: df (pd.DataFrame): DataFrame with assets and their values.
     Returns: pd.DataFrame: Adjusted DataFrame with normalized weights for assets.
     """
-    cols_to_normalize = [col for col in df.columns if col not in ["Date", "Tot_PV","Dollars" ,"Inflow", "Outflow"]]
+    cols_to_normalize = [col for col in df.columns if col not in ["Date", "Tot_PV","Inflow", "Outflow"]] #,"Dollars" 
     for col in cols_to_normalize:
         df[col] = (df[col] / df["Tot_PV"])
     df.drop(['Tot_PV'], axis=1, inplace=True)
@@ -113,7 +115,46 @@ def combine_dataframes(df_weights: pd.DataFrame, df_returns: pd.DataFrame) -> pd
     result_df['Daily_Portfolio_Return'] = result_df.sum(axis=1)  # Convert to percentage    
     return result_df
 
-def process_financial_data(merged_df: pd.DataFrame, crypto_df: pd.DataFrame) -> pd.DataFrame: 
+def Cumulative_returns_Plot(df):
+    st.write("Cumulative Returns Chart:")
+    cumulative_returns = (1 + df['Daily_Portfolio_Return'] / 100).cumprod()
+    plt.figure(figsize=(10, 5))
+    plt.plot(cumulative_returns.index, cumulative_returns, label='Cumulative Returns')
+    plt.title('Cumulative Returns Over Time')
+    plt.xlabel('Date')
+    plt.ylabel('Growth of $1 Investment')
+    plt.legend()
+    plt.show()
+    st.pyplot(plt)
+    return
+
+def Weights_plot(df):
+    df['Date'] = pd.to_datetime(df['Date'])
+    df.set_index('Date', inplace=True)
+    df = df*100
+    st.write("Weights Plot:")
+    fig, ax = plt.subplots(figsize=(10, 5))
+    df.plot(ax=ax)  # Use DataFrame's plot method for correct axis handling
+    ax.set_title('Asset Weights Over Time')
+    ax.set_xlabel('Date')
+    ax.set_ylabel('Weight (%)')  # Assuming the data is in percentage form
+    st.pyplot(fig)
+
+def returns_plot(df):
+    #st.write("Returns Plot:")
+    st.subheader("Returns Plot:")
+    plt.figure(figsize=(10, 5))
+    plt.plot(df.index, df['Adj_returns'], label='Daily Returns', color='green')
+    plt.title('Daily Portfolio Returns')
+    plt.xlabel('Date')
+    plt.ylabel('Returns (%)')
+    plt.legend()
+    plt.show()
+    st.pyplot(plt)
+
+    return
+    
+def process_financial_data(merged_df: pd.DataFrame, crypto_df: pd.DataFrame) -> (pd.DataFrame, pd.DataFrame, pd.DataFrame, pd.DataFrame):
     """
     Objective:Process financial data to calculate adjusted returns and normalize weights.
     Args:  merged_df (pd.DataFrame): DataFrame with asset and cash inflow and outflow.
@@ -130,8 +171,8 @@ def process_financial_data(merged_df: pd.DataFrame, crypto_df: pd.DataFrame) -> 
     
         result_df = combine_dataframes(weights_df.copy(), IR_df.copy())
     
-        return result_df 
+        return result_df, IR_df, weights_df, tot_ret_df  
 
     except Exception as e:
         print(f"An error occurred: {e}")
-        return pd.DataFrame()  # Return an empty DataFrame in case of errors
+        return pd.DataFrame(),pd.DataFrame(),pd.DataFrame(),pd.DataFrame()  # Return an empty DataFrame in case of errors

@@ -29,7 +29,8 @@ def main():
     print("--------------------   Stage 1    --------------------")
     if 'position history' in dataframes:
       crypto_df = dataframes['position history'].copy()
-      crypto_df = clean_column_names(crypto_df)      
+      crypto_df = clean_column_names(crypto_df)
+      columns = ', '.join(crypto_df.columns)      
       crypto_df = preprocess_dataframe(crypto_df)
       crypto_df_working = add_total_pv_column(crypto_df)
       print("__________FileIngested - Dataframe Created__________")
@@ -39,6 +40,7 @@ def main():
     # Display the column names
     columns = ', '.join(crypto_df.columns)
     st.text(f"Cryptos used: {columns}")
+    
     # Slider to select the number of rows to display
     print("--------------------   Stage 2    --------------------")
     num_rows = st.slider('Select number of rows to display:', min_value=1, max_value=len(crypto_df), value=3)
@@ -52,12 +54,21 @@ def main():
       transaction_df = dataframes['transaction history'].copy()
       complete_df = Combining_sheets(crypto_df_working, transaction_df)
 
-    print("__________Stage:Findata __________")
-    result_df = process_financial_data(complete_df, crypto_df)
+    print("__________Stage:data __________")
+    result_df, DR_DF, Weight_df,tot_ret_df = process_financial_data(complete_df, crypto_df)
+    print("-------------------------------------------------********************-----------------------------------")
+    print(DR_DF.head(),Weight_df.head())
+
+    returns_plot(tot_ret_df)
+    Cumulative_returns_Plot(result_df)
+    Weights_plot(Weight_df)
+
 
     print("--------------------   Stage 3    --------------------")
     print("__________Stage:Factordata __________")
     factor_df = Factor_Data(['BTC-USD','^GSPC','ETH-USD'], crypto_df, result_df)
+
+
 
     print("--------------------   Stage 4    --------------------")
     print("__________Stage:Risk __________")

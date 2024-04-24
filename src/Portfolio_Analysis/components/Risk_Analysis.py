@@ -52,9 +52,9 @@ def Risk_vs_Return(df):
     # plt.show()  # This will show the second plot separately
 
     # Create and display Sharpe Ratio bar plot
+    st.write("Sharpe Ratio Plot:")
     fig, ax = plt.subplots()
     Sharpe_R.plot.bar(
-        title="Sharpe Ratio",
         grid=True,
         figsize=(12, 5),
         rot=0,
@@ -64,11 +64,11 @@ def Risk_vs_Return(df):
     st.pyplot(fig)
 
     # Create and display box plot for daily returns
+    st.write("Box Plot of Crypto Daily Returns")
     fig, ax = plt.subplots()
     df.plot(
         kind='box',
-        figsize=(12, 5),
-        title="Box Plot of Funds' Daily Returns",
+        figsize=(12, 5),    
         ylabel="Returns [%]",
         ax=ax
     )
