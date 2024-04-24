@@ -6,9 +6,8 @@ matplotlib
 scipy
 streamlit
 shap
-sklearn
+scikit-learn
 xgboost
 typing
 datetime
 IPython
--e .

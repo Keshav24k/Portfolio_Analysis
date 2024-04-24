@@ -23,7 +23,7 @@ list_of_files = [
     "main.py",
     "requirements.txt",
     "setup.py",
-    "streamlit app.py",
+    "streamlit_app.py",
     f"Notebooks/research.ipynb",
 
 ]
