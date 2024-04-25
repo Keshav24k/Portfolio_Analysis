@@ -11,3 +11,5 @@ xgboost
 typing
 datetime
 IPython
+statsmodels
+

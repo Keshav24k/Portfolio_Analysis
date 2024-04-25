@@ -31,7 +31,7 @@ def merge_dataframes(crypto_df: pd.DataFrame, transaction_df: pd.DataFrame) -> p
     Returns:
     pd.DataFrame: Merged DataFrame with essential transaction columns.
     """
-    # Mege the datasets based on data for the required columns
+    # Merge the datasets based on data for the required columns
     merged_df = pd.merge(crypto_df, transaction_df[['Date', 'inflow amount', 'outflow amount']], on="Date", how="left") 
 
     # Extract and rename the inflow and outflow amounts
@@ -81,7 +81,7 @@ def calculate_column_returns(df: pd.DataFrame) -> pd.DataFrame:
     df2 = pd.DataFrame(df['Date'])
     for column in df.columns:
         if column != 'Date' and column !='Tot_PV': #and column != 'Dollars': 
-            df2[column] = df[column].pct_change()
+            df2[column] = df[column].pct_change() * 100
     df2.replace([float('inf'), -float('inf')], pd.NA, inplace=True)
     df2 = df2.fillna(0)
     return df2
@@ -92,10 +92,17 @@ def normalize_weights(df: pd.DataFrame) -> pd.DataFrame:
     Args: df (pd.DataFrame): DataFrame with assets and their values.
     Returns: pd.DataFrame: Adjusted DataFrame with normalized weights for assets.
     """
+    #df = df.abs()
+    #df.iloc[:, 1:] = df.iloc[:, 1:].abs()
+    #df.iloc[:,-1] = df.iloc[:, 1:-1].sum(axis=1)
+    #st.dataframe(df.head())
+
     cols_to_normalize = [col for col in df.columns if col not in ["Date", "Tot_PV","Inflow", "Outflow"]] #,"Dollars" 
     for col in cols_to_normalize:
         df[col] = (df[col] / df["Tot_PV"])
+    #st.dataframe(df.head())
     df.drop(['Tot_PV'], axis=1, inplace=True)
+    #st.dataframe(df.head())
     return df
 
 def combine_dataframes(df_weights: pd.DataFrame, df_returns: pd.DataFrame) -> pd.DataFrame:
@@ -115,7 +122,11 @@ def combine_dataframes(df_weights: pd.DataFrame, df_returns: pd.DataFrame) -> pd
     result_df['Daily_Portfolio_Return'] = result_df.sum(axis=1)  # Convert to percentage    
     return result_df
 
-def Cumulative_returns_Plot(df):
+def Cumulative_returns_Plot(df: pd.DataFrame):
+    """Plots the cumulative returns chart.
+    Args: DataFrame with Daily Returns Data
+    returns: None
+    """
     st.write("Cumulative Returns Chart:")
     cumulative_returns = (1 + df['Daily_Portfolio_Return'] / 100).cumprod()
     plt.figure(figsize=(10, 5))
@@ -128,7 +139,11 @@ def Cumulative_returns_Plot(df):
     st.pyplot(plt)
     return
 
-def Weights_plot(df):
+def Weights_plot(df: pd.DataFrame):
+    """Plots the Portfolio weights chart.
+    Args: DataFrame with  Daily Weights Data
+    returns: None
+    """
     df['Date'] = pd.to_datetime(df['Date'])
     df.set_index('Date', inplace=True)
     df = df*100
@@ -140,11 +155,14 @@ def Weights_plot(df):
     ax.set_ylabel('Weight (%)')  # Assuming the data is in percentage form
     st.pyplot(fig)
 
-def returns_plot(df):
-    #st.write("Returns Plot:")
-    st.subheader("Returns Plot:")
+def returns_plot(df: pd.DataFrame):
+    """Plots the Portfolio total Returns chart.
+    Args: DataFrame with  Daily Weights Data
+    returns: None
+    """
+
     plt.figure(figsize=(10, 5))
-    plt.plot(df.index, df['Adj_returns'], label='Daily Returns', color='green')
+    plt.plot(df.index, df.iloc[:,-1], label='Daily Returns', color='green')
     plt.title('Daily Portfolio Returns')
     plt.xlabel('Date')
     plt.ylabel('Returns (%)')
@@ -153,14 +171,55 @@ def returns_plot(df):
     st.pyplot(plt)
 
     return
+
+def data_visualization(tot_ret_df: pd.DataFrame,result_df: pd.DataFrame,Weight_df: pd.DataFrame):
+
+    tot_ret_df.set_index('Date', inplace=True)
+    st.subheader("Returns Plot:")
+    st.write("Inflow Outflow Adjusted returns:")
+    returns_plot(tot_ret_df)
+    st.markdown(""" <style>
+                    input[data-baseweb="input"] {
+                    width: 90% !important;
+                }
+                </style>
+                """, unsafe_allow_html=True)
+
+    st.write("The plot depicts the daily returns of a financial portfolio that exhibits good volatility," 
+             "Most returns fluctuate between -10% and +15%, indicating some risk control. \n A prominent feature is a sharp spike around the 60th data point," 
+             "where returns shoot up to about 30%, suggesting a significant positive impact on the portfolio at that time.\n\n" 
+             "The actual dates are not specified, making it challenging to link the performance with specific external events without further information.\n")
+
+    st.write("\nWeight Adjusted returns:")
+    returns_plot(result_df)
+    st.write("The plot shows weight-adjusted daily portfolio returns, reflecting performance after accounting for the proportional impact of each asset.\n" 
+             "The returns demonstrate volatility, with most values oscillating near zero, indicating days with minimal gain or loss.\n" 
+             "However, there's a notable anomaly with returns spiking above 150% due to the inflow of cash, which could point to a significant event affecting a heavily weighted asset.\n" 
+             "This extreme spike is an outlier compared to the general trend of the portfolio's performance.\n")
+
+
+    Cumulative_returns_Plot(result_df)
+    st.write("The plot represents the cumulative returns on an investment over time. It shows the growth of $1 invested in the portfolio." 
+             "The investment value grows steadily at first, indicating a gradual increase in returns.\n" 
+             "Around early February, there is a significant jump in the value of the investment, indicating a period of high returns.\n" 
+             "The investment value continues to increase at a more moderate pace, with some fluctuation, until it levels off toward the end of the period shown.") 
+
+    Weights_plot(Weight_df)
+    st.write("The weights plot displays the changing daily weight composition of a portfolio.\n" 
+             "The most notable movements are the significant increase in the weight of OCEAN/USDT in late February, where it rises sharply to over 60% of the portfolio," 
+             "and a corresponding increase in RPL/USDT.\n"
+             "BADGER/USDT initially holding the majority share, decreases slightly but remains a substantial portion of the portfolio.\n" 
+             "Other assets like Frax Share, Maker, Render, Ribbon Finance, and Dollar have minimal changes, indicating stable but smaller positions within the portfolio.\n")
+
+    return
     
 def process_financial_data(merged_df: pd.DataFrame, crypto_df: pd.DataFrame) -> (pd.DataFrame, pd.DataFrame, pd.DataFrame, pd.DataFrame):
     """
     Objective:Process financial data to calculate adjusted returns and normalize weights.
     Args:  merged_df (pd.DataFrame): DataFrame with asset and cash inflow and outflow.
            crypto_df (pd.DataFrame): DataFrame with asset sum(Balance)
-    Returns:  pd.DataFrame: Resulting DataFrame with daily portfolio returns.
-    """
+    Returns:  pd.DataFrame: Resulting DataFrame with daily portfolio returns, column wise daily return, 
+              row-wise weights of portfolio, daily returns based on transactions """
     try:
         print("Method 1 to calculate Daily returns")
         tot_ret_df = calculate_returns(merged_df)
