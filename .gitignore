@@ -1,4 +1,6 @@
 portfolio/*
 .venv/*
 src/Portfolio_Analysis/components/__pycache__?*
+
 __pycache__/
+*.pyc
