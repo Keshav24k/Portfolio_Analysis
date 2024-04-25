@@ -116,6 +116,7 @@ def Shap_Importance(data: pd.DataFrame):
     shap.summary_plot(shap_values.values, X_train, show=False)
     st.pyplot(plt.gcf())
     plt.clf()
+    plt.close()
 
     # Dependence Plot for a specific feature
     st.write("Dependence Plot:")
@@ -129,7 +130,8 @@ def Shap_Importance(data: pd.DataFrame):
     plt.figure(figsize=(20, 10), dpi=150)  # Adjust figure size and resolution
     shap.dependence_plot(X_train.columns[feature_index], shap_values.values, X_train, show=False)
     st.pyplot(plt.gcf())  # Display the plot in Streamlit
-    plt.clf() 
+    plt.clf()
+    plt.close() 
 
 
 
