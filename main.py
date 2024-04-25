@@ -45,7 +45,8 @@ def main():
     print("\n\n--------------------   Stage 2    --------------------")
     num_rows = st.slider('Select number of rows to display:', min_value=1, max_value=len(crypto_df), value=3)
     st.write(f"Displaying {num_rows} rows of data:")
-    # Display DataFrame using st.dataframe or st.write
+    
+    # Display Clean DataFrame 
     st.dataframe(crypto_df.head(num_rows))
 
     print("\n_________Merging - Portfolio & Transaction____________")
@@ -56,6 +57,12 @@ def main():
     print("__________Stage:data __________")
     result_df, DR_DF, Weight_df,tot_ret_df = process_financial_data(complete_df, crypto_df)
     print("-------------------------------------------------********************-----------------------------------")
+    
+    #displaying Returns dataframe
+    num_rows1 = st.slider('Select number of rows to display:', min_value=1, max_value=len(tot_ret_df), value=4)
+    st.subheader("Returns datadrame:")
+    st.write(f"Displaying {num_rows1} rows of data:")
+    st.dataframe(tot_ret_df.head(num_rows1))
 
     data_visualization(tot_ret_df,result_df,Weight_df)
 

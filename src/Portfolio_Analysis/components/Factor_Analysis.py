@@ -283,12 +283,12 @@ def Factor_Analysis(df: pd.DataFrame):
              "Factor Impact (Alpha and Beta Values):\n\n"
              "Alpha (2.8388): Indicates that the portfolio's returns are well above the return that would be predicted by its exposure to the systematic risk of the market\n" 
              "(as represented by the beta measures). This suggests good portfolio management.\n")
-    st.write("Beta Values: Measure the portfolio’s sensitivity to the movements of the underlying assets or market.\n" 
-             "A beta of -0.0646 for BTC-USD indicates a very slight inverse relationship with the portfolio.\n" 
-             "A beta of 5.1448 for ^GSPC implies that the portfolio is highly sensitive to movements in the equity market, moving more than five times in the same direction for any change in ^GSPC.\n" 
-             "The beta of 1.0285 for ETH-USD suggests that the portfolio's performance is likely to follow ETH-USD's movements closely.\n"
+    st.write("Beta Values: \nMeasure the portfolio’s sensitivity to the movements of the underlying assets or market.\n\n" 
+             "A beta of -0.0646 for BTC-USD indicates a very slight inverse relationship with the portfolio.\n\n" 
+             "A beta of 5.1448 for ^GSPC implies that the portfolio is highly sensitive to movements in the equity market, moving more than five times in the same direction for any change in ^GSPC.\n\n" 
+             "The beta of 1.0285 for ETH-USD suggests that the portfolio's performance is likely to follow ETH-USD's movements closely.\n\n"
              "Overall, the portfolio is heavily influenced by movements in the equity market and has a strong positive relationship with ETH-USD.\n" 
-             "BTC-USD's influence is relatively small and slightly negative. The high alpha suggests that the portfolio is outperforming the expected return given its risk profile.")
+             "BTC-USD's influence is relatively small and slightly negative. The high alpha suggests that the portfolio is performing decently given its risk profile.")
 
     Permutation_Importance(df)
 

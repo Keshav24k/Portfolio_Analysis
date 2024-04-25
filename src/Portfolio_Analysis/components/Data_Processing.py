@@ -172,6 +172,23 @@ def returns_plot(df: pd.DataFrame):
 
     return
 
+def Individual_returns_plot(df: pd.DataFrame):
+    """Plots the Portfolio total Returns chart.
+    Args: DataFrame with  Daily Weights Data
+    returns: None
+    """
+
+    plt.figure(figsize=(10, 5))
+    plt.plot(df.index, df.iloc[:,:-1], label=df.columns[:-1])
+    plt.title(' Individual Asset Returns')
+    plt.xlabel('Date')
+    plt.ylabel('Returns (%)')
+    plt.legend()
+    plt.show()
+    st.pyplot(plt)
+
+    return
+
 def data_visualization(tot_ret_df: pd.DataFrame,result_df: pd.DataFrame,Weight_df: pd.DataFrame):
 
     tot_ret_df.set_index('Date', inplace=True)
@@ -196,7 +213,12 @@ def data_visualization(tot_ret_df: pd.DataFrame,result_df: pd.DataFrame,Weight_d
              "The returns demonstrate volatility, with most values oscillating near zero, indicating days with minimal gain or loss.\n" 
              "However, there's a notable anomaly with returns spiking above 150% due to the inflow of cash, which could point to a significant event affecting a heavily weighted asset.\n" 
              "This extreme spike is an outlier compared to the general trend of the portfolio's performance.\n")
-
+    
+    st.write("\Individual Asset returns:")
+    Individual_returns_plot(result_df)
+    st.write("The graph illustrates the varied performance of different assets over the specified timeframe with most assets showing minimal returns" 
+             "and a couple displaying short-term volatility with sharp increases in returns.\n"
+             "From the visual, it's clear that most assets have returns fluctuating close to the 0% line, suggesting stable or nominal growth over the observed period.")
 
     Cumulative_returns_Plot(result_df)
     st.write("The plot represents the cumulative returns on an investment over time. It shows the growth of $1 invested in the portfolio." 
