@@ -23,7 +23,7 @@ def Risk_vs_Return(df: pd.DataFrame):
     risk_free_rate=0
     Sharpe_R = Average_return / Standard_Deviation
 
-    st.subheader("Average Return")
+    st.subheader("Average Returns")
     st.write(Average_return.sort_values())
 
     st.subheader("Standard Deviation")
@@ -44,7 +44,7 @@ def Risk_vs_Return(df: pd.DataFrame):
     st.pyplot(fig)
 
     # Create and display box plot for daily returns
-    st.write("Box Plot of Crypto Daily Returns")
+    st.write("Box Plot of Crypto Daily Returns:")
     fig, ax = plt.subplots()
     df.plot(
         kind='box',

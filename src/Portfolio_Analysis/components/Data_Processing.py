@@ -214,14 +214,14 @@ def data_visualization(tot_ret_df: pd.DataFrame,result_df: pd.DataFrame,Weight_d
              "However, there's a notable anomaly with returns spiking above 150% due to the inflow of cash, which could point to a significant event affecting a heavily weighted asset.\n" 
              "This extreme spike is an outlier compared to the general trend of the portfolio's performance.\n")
     
-    st.write("\Individual Asset returns:")
+    st.write("Individual Asset returns:")
     Individual_returns_plot(result_df)
-    st.write("The graph illustrates the varied performance of different assets over the specified timeframe with most assets showing minimal returns" 
+    st.write("The graph illustrates the varied performance of different assets over the specified timeframe with most assets showing minimal returns " 
              "and a couple displaying short-term volatility with sharp increases in returns.\n"
              "From the visual, it's clear that most assets have returns fluctuating close to the 0% line, suggesting stable or nominal growth over the observed period.")
 
     Cumulative_returns_Plot(result_df)
-    st.write("The plot represents the cumulative returns on an investment over time. It shows the growth of $1 invested in the portfolio." 
+    st.write("The plot represents the cumulative returns on an investment over time. It shows the growth of $1 invested in the portfolio. " 
              "The investment value grows steadily at first, indicating a gradual increase in returns.\n" 
              "Around early February, there is a significant jump in the value of the investment, indicating a period of high returns.\n" 
              "The investment value continues to increase at a more moderate pace, with some fluctuation, until it levels off toward the end of the period shown.") 

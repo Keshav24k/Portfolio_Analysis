@@ -60,7 +60,7 @@ def main():
     
     #displaying Returns dataframe
     num_rows1 = st.slider('Select number of rows to display:', min_value=1, max_value=len(tot_ret_df), value=4)
-    st.subheader("Returns datadrame:")
+    st.subheader("Returns dataFrame:")
     st.write(f"Displaying {num_rows1} rows of data:")
     st.dataframe(tot_ret_df.head(num_rows1))
 

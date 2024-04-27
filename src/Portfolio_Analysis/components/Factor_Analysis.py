@@ -278,7 +278,7 @@ def Factor_Analysis(df: pd.DataFrame):
 
     st.write("Covariance Matrix: The covariance between the assets and the Daily_Portfolio_Return shows ETH-USD has the highest covariance," 
              "followed by BTC-USD, implying these cryptocurrencies' returns move more in tandem with the portfolio’s returns compared to ^GSPC.\n\n"
-             "Correlation Matrix: All assets have a positive but weak correlation with the Daily_Portfolio_Return, with ETH-USD having the highest correlation (0.1861)," 
+             "Correlation Matrix: All assets have a positive but weak correlation with the Daily_Portfolio_Return, with ETH-USD having the highest correlation (0.1861), " 
              "suggesting it has the strongest relationship with the portfolio’s returns among the three.\n\n"
              "Factor Impact (Alpha and Beta Values):\n\n"
              "Alpha (2.8388): Indicates that the portfolio's returns are well above the return that would be predicted by its exposure to the systematic risk of the market\n" 
